@@ -10,12 +10,12 @@
 
 		$table = "user";
 		$attributes = [
-				"fname" => "Test FName 1", //$_POST["fname"],
-				"lname" => "Test LName1", //$_POST["lname"],
-				"dob" => date('Y-m-d', strtotime("08/12/1991")), //$_POST["dob"],
-				"email" => "testfname@testlname.com", //$_POST["email"],
-				"password" => md5("password"), //md5($_POST["password"]),
-				"contact_info" => 9876543210 //$_POST["contat_info"]
+				"fname" => $_POST["fname"],
+				"lname" => $_POST["lname"],
+				"dob" => date('Y-m-d', strtotime("$_POST["dob"]")),
+				"email" => $_POST["email"],
+				"password" => md5($_POST["password"]),
+				"contact_info" => intval($_POST["contat_info"])
 			];
 		$filter = [];
 

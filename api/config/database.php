@@ -76,7 +76,6 @@
 		public function create($table, $attribute, $filter) {
 			try {
 
-				$bind_param_arr = [];
 				$sql_query = "INSERT INTO ".$table." (".implode(", ",array_keys($attribute)).")";
 				$sql_query .= " VALUES (";
 				for($i=0;$i<count($attribute);$i++){
@@ -100,6 +99,39 @@
 				echo "Connection Error: ".$exp -> getMessage();
 			}
 			return $create_flag;
+		}
+
+
+		public function update($table, $attribute, $filter) {
+
+			 try {
+
+                                $sql_query = "UPDATE ".$table;
+                                $sql_query .= " SET ";
+                                for($i=0;$i<count($attribute);$i++){
+                                        $sql_query .= array_keys($attribute)[$i]." = ".":".array_keys($attribute)[$i];
+					$sql_query .= ($i < count($attribute)-1) ? ", " : "";
+                                };
+                                $sql_query .= " WHERE ".array_keys($filter)[0]." = :".array_keys($filter)[0].";";
+
+				$stmt = $this -> conn -> prepare($sql_query);
+
+
+                                foreach($attribute as $attr => &$val){
+
+                                        $stmt -> bindParam(":$attr", $val, (gettype($val) != 'string') ? PDO::PARAM_INT : PDO::PARAM_STR);
+                                }
+
+				$stmt -> bindParam(":".array_keys($filter)[0], $filter[array_keys($filter)[0]], PDO::PARAM_INT);
+
+
+                                $update_flag = $stmt -> execute();
+
+                        } catch(Exception $exp) {
+                                echo "Connection Error: ".$exp -> getMessage();
+                        }
+                        return $update_flag;
+
 		}
 
 	}
