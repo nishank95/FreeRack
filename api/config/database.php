@@ -23,32 +23,48 @@
 
 		}
 
-		public function retrieve($table, $attributes, $filter) {
+		public function build_sql_query($table, $attributes, $filter) {
 
 			$sql_query = "SELECT ";
-			$sql_query .= ($attributes == "*") ? "*" : implode(", ",$attributes);
-			$sql_query .= " FROM ".$table;
-			
-			if(count($filter) != 0) {
-				
-				$sql_query .= " WHERE ";
+                        $sql_query .= ($attributes == "*") ? "*" : implode(", ",$attributes);
+                        $sql_query .= " FROM ".$table;
 
-				if(count($filter == 1)) {
-					$sql_query .= array_keys($filter)[0]." = ".$filter[array_keys($filter)[0]].";";
-				}
-				else {
-					$loop_count = 1;
-					foreach($filter as $attr => $val){
-						$sql_query .= $attr." = ".$val.($loop_count < count($filter) ? " AND " : "").";";
-						$loop_count++;
-					}
+                        if(count($filter) != 0) {
 
-				}
-			}
+                                $sql_query .= " WHERE ";
 
-			echo $sql_query;
+                                if(count($filter == 1)) {
+                                        $sql_query .= array_keys($filter)[0]." = ".$filter[array_keys($filter)[0]].";";
+                                }
+                                else {
+                                        $loop_count = 1;
+                                        foreach($filter as $attr => $val){
+                                                $sql_query .= $attr." = ".$val.($loop_count < count($filter) ? " AND " : "").";";
+                                                $loop_count++;
+                                        }
+
+                                }
+                        }
+			return $sql_query;
 
 		}
 
+		public function retrieve($table, $attributes, $filter) {
+
+			$user_list = [];
+
+			$sql_query = $this -> build_sql_query($table, $attributes, $filter);
+
+			$stmt = $this -> conn -> prepare($sql_query);
+
+			$stmt -> execute();
+
+			while($user = $stmt -> fetch(PDO::FETCH_ASSOC)){
+				array_push($user_list, $user);
+			}
+			
+			return $user_list;
+
+		}
 
 	}

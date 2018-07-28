@@ -16,8 +16,14 @@
 			
 			$filter["user_id"] = $_GET["id"];
 		}
-		$db -> retrieve($table, $attributes, $filter);
+
+		$user_list = $db -> retrieve($table, $attributes, $filter);
 		
+		print ("<pre>");
+		print_r (json_encode($user_list));
+		print ("</pre>");
+		
+		return json_encode($user_list);
 
 	}
 	else {
