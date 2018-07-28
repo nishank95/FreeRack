@@ -8,19 +8,21 @@
 		
 		// echo "Connected!";
 
-		$table = "user";
-		$attributes = ["fname", "lname", "dob", "email", "password", "contact_info"];
+		$table = "category";
+		$attributes = ["cat_name"];
 		$filter = [];
 
 		if ($_GET){
 			
-			$filter["user_id"] = $_GET["id"];
+			$filter["cat_id"] = $_GET["id"];
 		}
 
 		$user_list = $db -> retrieve($table, $attributes, $filter);
 		
-		echo json_encode($user_list);
-
+		print ("<pre>");
+		print_r (json_encode($user_list));
+		print ("</pre>");
+		
 		return json_encode($user_list);
 
 	}

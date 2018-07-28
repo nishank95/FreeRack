@@ -34,17 +34,18 @@
                                 $sql_query .= " WHERE ";
 
                                 if(count($filter == 1)) {
-                                        $sql_query .= array_keys($filter)[0]." = ".$filter[array_keys($filter)[0]].";";
+                                        $sql_query .= array_keys($filter)[0]." = ".$filter[array_keys($filter)[0]];
                                 }
                                 else {
                                         $loop_count = 1;
                                         foreach($filter as $attr => $val){
-                                                $sql_query .= $attr." = ".$val.($loop_count < count($filter) ? " AND " : "").";";
+                                                $sql_query .= $attr." = ".$val.($loop_count < count($filter) ? " AND " : "");
                                                 $loop_count++;
                                         }
 
                                 }
                         }
+			$sql_query .= ";";
 			return $sql_query;
 
 		}
@@ -75,19 +76,25 @@
 		public function create($table, $attribute, $filter) {
 			try {
 
-				$sql_query = "INSERT INTO user (fname, lname, dob, email, password, contact_info) VALUES (:fname, :lname, :dob, :email, :password, :contact_info);";
+				$bind_param_arr = [];
+				$sql_query = "INSERT INTO ".$table." (".implode(", ",array_keys($attribute)).")";
+				$sql_query .= " VALUES (";
+				for($i=0;$i<count($attribute);$i++){
+					$sql_query .= ":";
+					$sql_query .= ($i<count($attribute)-1) ? array_keys($attribute)[$i].", " : array_keys($attribute)[$i];
+				};
+				$sql_query .= ");";
 
 				$stmt = $this -> conn -> prepare($sql_query);
 
-				$stmt -> bindParam(":fname", $attribute["fname"]);
-				$stmt -> bindParam(":lname", $attribute["lname"]);
-				$stmt -> bindParam(":dob",  date('Y-m-d', strtotime($attribute["dob"])));
-				$stmt -> bindParam(":email", $attribute["email"]);
-				$stmt -> bindParam(":password", md5($attribute["password"]));
-				$stmt -> bindParam(":contact_info", $attribute["contact_info"], PDO::PARAM_INT);
+
+				foreach($attribute as $attr => &$val){
+
+					$stmt -> bindParam(":$attr", $val, (gettype($val) != 'string') ? PDO::PARAM_INT : PDO::PARAM_STR);
+				}
+
 			
 				$create_flag = $stmt -> execute();
-				
 
 			} catch(Exception $exp) {
 				echo "Connection Error: ".$exp -> getMessage();
