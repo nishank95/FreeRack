@@ -9,13 +9,14 @@
 		// echo "Connected!";
 
 		$table = "user";
+		print_r($_POST);
 		$attributes = [
 				"fname" => $_POST["fname"],
 				"lname" => $_POST["lname"],
-				"dob" => date('Y-m-d', strtotime("$_POST["dob"]")),
+				"dob" => date('Y-m-d', strtotime("$_POST[dob]")),
 				"email" => $_POST["email"],
 				"password" => md5($_POST["password"]),
-				"contact_info" => intval($_POST["contat_info"])
+				"contact_info" => intval($_POST["contact_info"])
 			];
 		$filter = [];
 
